@@ -10,7 +10,7 @@ public class CsvReader {
     /**
      * 从csv文件里加载数据集
      */
-    public List<DataRecord> readData(String filePath) {
+    public List<DataRecord> readData(List<String> filePath) {
         return null;
     }
 }
