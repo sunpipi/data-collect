@@ -1,8 +1,10 @@
 package topic.pipi.model;
 
+import java.util.UUID;
+
 public class DataRecord {
 
-    private String uuid;
+    private String uuid = UUID.randomUUID().toString();
     /**
      * 股票代码
      */
@@ -17,10 +19,6 @@ public class DataRecord {
 
     public String getUuid() {
         return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getStockCode() {
