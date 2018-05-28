@@ -1,10 +1,16 @@
 package topic.pipi.model;
 
+import topic.pipi.exception.TaskErrorException;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 public class DataRecord {
 
-    private String uuid = UUID.randomUUID().toString();
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    private String uuid = UUID.randomUUID().toString().replaceAll("-", "");
     /**
      * 股票代码
      */
@@ -16,6 +22,7 @@ public class DataRecord {
      * 时间
      */
     private String tradeDate;
+    private long tradeDateInMillis;
 
     public String getUuid() {
         return uuid;
@@ -41,7 +48,26 @@ public class DataRecord {
         return tradeDate;
     }
 
+    public long getTradeDateInMillis() {
+        return tradeDateInMillis;
+    }
+
     public void setTradeDate(String tradeDate) {
         this.tradeDate = tradeDate;
+        try {
+            this.tradeDateInMillis = DATE_FORMAT.parse(this.tradeDate).getTime();
+        } catch (ParseException e) {
+            throw new TaskErrorException("cant parse date of record with format yyyy-MM-dd:" + tradeDate, e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DataRecord{" +
+                "uuid='" + uuid + '\'' +
+                ", stockCode='" + stockCode + '\'' +
+                ", value=" + value +
+                ", tradeDate='" + tradeDate + '\'' +
+                '}';
     }
 }

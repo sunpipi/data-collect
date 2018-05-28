@@ -5,6 +5,7 @@ import topic.pipi.exception.TaskErrorException;
 import topic.pipi.model.DataRecord;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 
@@ -18,25 +19,31 @@ public class DefaultMysqlWriter implements DataSinker {
      */
     @Override
     public List<DataRecord> writeData(List<DataRecord> records) {
+        if (records.isEmpty()) {
+            return null;
+        }
         Connection conn = MysqlConnector.getConnection();
         try {
             conn.setAutoCommit(false);
-            PreparedStatement pstmt = conn.prepareStatement("insert into loadtest (id, data) values (?, ?)");
-            for (int i = 0; i <= records.size(); i++) {
-//            pstmt.clearParameters();
-//            pstmt.setInt(1, i);
-//            pstmt.setString(2, DATA);
-
-                pstmt.addBatch();
+            PreparedStatement statement = conn.prepareStatement("insert into " + MysqlConnector.TABLE + " (item_id , trading_date ,stock_code ,item_value ) values (?, ?, ?, ?)");
+            for (int i = 0; i < records.size(); i++) {
+                DataRecord record = records.get(i);
+                statement.clearParameters();
+                statement.setString(1, record.getUuid());
+                statement.setDate(2, new Date(record.getTradeDateInMillis()));
+                statement.setString(3, record.getStockCode());
+                statement.setDouble(4, record.getValue());
+                statement.addBatch();
             }
-            pstmt.executeBatch();
+            statement.executeBatch();
             conn.commit();
 
-            pstmt.close();
+            statement.close();
+            System.out.println("DefaultMysqlWriter: " + records.size() + " sink");
             return null;
         } catch (Exception e) {
             throw new TaskErrorException("mysql insertion error! ", e);
-        }finally {
+        } finally {
             MysqlConnector.returnConnection(conn);
         }
     }
