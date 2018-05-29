@@ -101,10 +101,9 @@ public class TaskHub {
             return ret;
         }
         int len = Math.max(1, filepathList.size() / readerSize);
-        int workLeft = filepathList.size();
+        int workLeft = filepathList.size() % readerSize;
         for (int i = 0; i < readerSize; i++) {
             int limit = i == readerSize - 1 ? len + workLeft : len;
-            workLeft -= len;
             ret.add(filepathList.stream().skip(i * len).limit(limit).collect(Collectors.toList()));
         }
         return ret;

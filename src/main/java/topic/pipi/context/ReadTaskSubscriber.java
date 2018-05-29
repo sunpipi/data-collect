@@ -44,10 +44,9 @@ public class ReadTaskSubscriber extends BaseSubscriber<List<DataRecord>> {
             return ret;
         }
         int len = Math.max(1, records.size() / context.getWriterSize());
-        int workLeft = records.size();
+        int workLeft = records.size() % context.getWriterSize();
         for (int i = 0; i < context.getWriterSize(); i++) {
             int limit = i == context.getWriterSize() - 1 ? len + workLeft : len;
-            workLeft -= len;
             ret.add(records.stream().skip(i * len).limit(limit).collect(Collectors.toList()));
         }
         return ret;
